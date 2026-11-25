@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 from sklearn.metrics import r2_score
 
+from src import ingest
 from src.config import LAG_WARMUP, TARGET
 from src.features import build_features, feature_columns, reindex_to_calendar
 from src.ingest import load_raw
@@ -23,6 +24,19 @@ def test_calendar_is_complete_before_lagging(raw):
     """The reindexed frame must have no gaps, or the lags are wrong."""
     grid = reindex_to_calendar(raw)
     assert set(grid.dteday.diff().dropna().dt.days.unique()) == {1}
+
+
+@pytest.mark.parametrize("entry_point", ["download", "load_raw"])
+def test_raw_entry_points_reject_changed_bytes(tmp_path, monkeypatch, entry_point):
+    """A cached, parseable CSV must not bypass integrity checks."""
+    original = ingest.RAW.read_bytes()
+    tampered = tmp_path / "bike_daily.csv"
+    tampered.write_bytes(original + b"\n")
+    # A shape/schema-only check would still accept this modified file.
+    assert pd.read_csv(tampered).shape == pd.read_csv(ingest.RAW).shape
+    monkeypatch.setattr(ingest, "RAW", tampered)
+    with pytest.raises(ValueError, match="raw data checksum mismatch"):
+        getattr(ingest, entry_point)()
 
 
 def test_only_expected_rows_are_dropped(raw, feats):

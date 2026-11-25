@@ -17,6 +17,9 @@ rides) from calendar, weather, and lagged-demand features.
   for each. Derive feature lists from `FORBIDDEN`; never hand-type them.
 - **Never** split this data randomly. Use `src.train.temporal_split`.
   Train = 2011, valid = H1 2012, test = H2 2012. Never tune on test.
+- Raw CSV bytes must match `RAW_SHA256`; ingest checks cached files too.
+  Restore the original data after a controlled fault; never update the hash to fit it.
+- Unknown weather labels must raise; retain the rejection test in the hook's suite.
 - Any new lag or rolling feature must be built on a gap-free calendar
   index (`src.features.reindex_to_calendar`) and must `.shift(1)` before
   it aggregates. Add a test for it in `tests/test_leakage.py`.

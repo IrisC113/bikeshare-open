@@ -1,0 +1,2 @@
+*.sh text eol=lf
+data/raw/bike_daily.csv -text

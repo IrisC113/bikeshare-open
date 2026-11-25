@@ -2,6 +2,8 @@
 __pycache__/
 .pytest_cache/
 data/processed/
-reports/
+reports/*
 audit.jsonl
+!reports/metrics.json
+!reports/audit.jsonl
 .claude/settings.local.json

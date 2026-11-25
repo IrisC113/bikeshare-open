@@ -8,10 +8,11 @@
 # a Stop hook that runs `make test` and exits 2 on failure (check
 # stop_hook_active in the payload to avoid looping).
 set -uo pipefail
+export PYTHONIOENCODING=utf-8
 
 payload=$(cat)
-path=$(printf '%s' "$payload" | python3 -c \
-  'import json,sys; print(json.load(sys.stdin).get("tool_input",{}).get("file_path",""))')
+path=$(printf '%s' "$payload" | python -c \
+  'import json,sys; print(json.load(sys.stdin).get("tool_input",{}).get("file_path","").replace(chr(92), "/"))')
 
 case "$path" in
   *src/*.py) ;;

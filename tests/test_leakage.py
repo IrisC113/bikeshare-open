@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from src.config import FORBIDDEN, TARGET
-from src.features import build_features, feature_columns
+from src.features import build_features, encode_weather, feature_columns
 from src.ingest import load_raw
 
 
@@ -29,6 +29,12 @@ def test_no_forbidden_features(feats):
     exactly the fault the Step 7 hook demonstrates."""
     cols = set(feature_columns(feats))
     assert not (cols & FORBIDDEN), f"forbidden columns in feature set: {cols & FORBIDDEN}"
+
+
+def test_weather_encoder_rejects_unknown_labels():
+    """An unseen label must raise before map/dropna can silently delete a day."""
+    with pytest.raises(ValueError, match="unmapped weather labels.*STORM"):
+        encode_weather(pd.Series(["GOOD", "MISTY", "BAD", "STORM"]))
 
 
 def test_lags_are_true_calendar_lags(feats):

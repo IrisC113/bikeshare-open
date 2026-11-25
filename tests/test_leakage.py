@@ -57,6 +57,18 @@ def test_rolling_mean_excludes_today(feats):
         assert feats.set_index("dteday").cnt_roll_7[date] == pytest.approx(expected)
 
 
+def test_cnt_roll_3_excludes_today(feats):
+    """cnt_roll_3 must be the mean of the 3 calendar days *before* today.
+
+    For 2011-06-15: previous three days are 2011-06-14, 2011-06-13, 2011-06-12.
+    The feature must equal the mean of those three dates' raw counts."""
+    test_date = "2011-06-15"
+    window = [pd.Timestamp("2011-06-14"), pd.Timestamp("2011-06-13"), pd.Timestamp("2011-06-12")]
+    raw_counts = load_raw().set_index("dteday")[TARGET]
+    expected = sum(raw_counts.loc[d] for d in window) / 3
+    assert feats.set_index("dteday").cnt_roll_3[test_date] == pytest.approx(expected, rel=1e-9)
+
+
 def test_no_missing_values(feats):
     assert feats[feature_columns(feats)].isna().sum().sum() == 0
 

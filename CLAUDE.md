@@ -21,6 +21,7 @@ rides) from calendar, weather, and lagged-demand features.
 - Raw CSV bytes must match `RAW_SHA256`; ingest checks cached files too.
   Restore the original data after a controlled fault; never update the hash to fit it.
 - Unknown weather labels must raise; retain the rejection test in the hook's suite.
+- Classify every raw column in `src/config.py`; new columns must fail the contract test.
 - Any new lag or rolling feature must be built on a gap-free calendar
   index (`src.features.reindex_to_calendar`) and must `.shift(1)` before
   it aggregates. Add a test for it in `tests/test_leakage.py`.

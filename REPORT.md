@@ -65,4 +65,4 @@ Local model: **qwen3.5:4b** (4.2B, Q4_K_M), served by Ollama as `bikeshare-coder
 - I proposed the Exercise 4 transformations, finite candidate plan, validation selection rule and interpretation. I reviewed the generated functions and added the missing nonnegative-domain and vector-shape checks.
 - For Exercise 5, I drafted the conditional deployment argument and calculated the differences from the existing canonical scores.
 
-The saved self-audit predates the Exercise 4 flags and covers the original pipeline. It should be refreshed against the finished repository.
+The final SDK self-audit covered the current pipeline and target-transform code. It reported no leakage and passed the temporal, baseline and reproducibility checks, with high confidence. The structured result is saved in `reports/audit.jsonl`.

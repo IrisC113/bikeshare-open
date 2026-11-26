@@ -4,7 +4,7 @@ import pytest
 from sklearn.metrics import r2_score
 
 from src import ingest
-from src.config import LAG_WARMUP, TARGET
+from src.config import FORBIDDEN, LAG_WARMUP, RAW, RAW_FEATURE_COLS, TARGET
 from src.features import build_features, feature_columns, reindex_to_calendar
 from src.ingest import load_raw
 from src.train import MODELS, temporal_split
@@ -18,6 +18,20 @@ def raw():
 @pytest.fixture(scope="module")
 def feats(raw):
     return build_features(raw)
+
+
+def test_raw_columns_are_explicitly_classified():
+    """Read the header independently of the byte-integrity gate.
+
+    New numeric and text columns both require an explicit classification;
+    feature_columns() must not implicitly approve them based on dtype.
+    """
+    columns = set(pd.read_csv(RAW, nrows=0).columns)
+    unclassified = columns - FORBIDDEN - RAW_FEATURE_COLS - {"dteday"}
+    assert not unclassified, (
+        f"unclassified raw columns: {sorted(unclassified)}; "
+        "classify them in src/config.py before using the data"
+    )
 
 
 def test_calendar_is_complete_before_lagging(raw):

@@ -89,3 +89,35 @@ skill the lesson builds in Steps 7-8. `model/` holds the Modelfile and the
 readiness check. `agent/audit.py` is the Agent SDK batch auditor from Part 4;
 it uses the same local endpoint (`AUDIT_MODEL` overrides the model). Record
 methodological decisions in `docs/DECISIONS.md`.
+
+## Target transformation experiment (Exercise 4)
+
+Use these commands on a fresh checkout after `make all`, with dependencies installed.
+Select on validation and freeze the comparison before evaluating transformed test predictions.
+Existing local selection/output files document the completed experiment; do not overwrite
+those files or rerun test to select another transformation.
+
+From the repository root, reproduce validation with:
+
+```sh
+python -m src.train --target-transform residual --validation-only --out reports/exercise4/residual_validation.json
+python -m src.train --target-transform log_ratio --validation-only --out reports/exercise4/log_ratio_validation.json
+```
+
+For a fresh checkout, after reproducing validation, create a frozen manifest before inspecting test:
+
+```python
+import json
+from pathlib import Path
+from src.train import experiment_fingerprints
+lock = {"selected_transform": "log_ratio", "ridge_control": "residual",
+        "fingerprints": experiment_fingerprints(),
+        "test_output": str(Path("reports/exercise4/final_evaluation.json").resolve())}
+Path("reports/exercise4/selection.json").write_text(json.dumps(lock), encoding="utf-8")
+```
+
+```sh
+python -m src.train --target-transform log_ratio --ridge-control residual --include-test --selection reports/exercise4/selection.json --out reports/exercise4/final_evaluation.json
+```
+
+The test command rejects code/data drift, a different locked comparison, the canonical metrics destination, or an already-existing frozen output. The original local manifest also retains validation-artifact hashes and its freeze time. `make all` continues to run the original untransformed pipeline. Detailed plans, transcripts, metrics and logs under `reports/exercise4/` are local/ignored. The method and results are summarized in `REPORT.md`; the implementation is in `src/train.py` behind flags.

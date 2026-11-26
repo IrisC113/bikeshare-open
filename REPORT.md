@@ -96,6 +96,7 @@ Local model: **qwen3.5:4b** (4.2B, Q4_K_M), served by Ollama as `bikeshare-coder
 
 Agent-generated or integrated work:
 
+- Authored `/seed-fault` and its isolated-copy helper to package the repeated Exercise 2 workflow. All three supported faults were exercised: each produced a named failing test and manual hook exit 2, then passed after restoration. These helper-driven checks are separate from the earlier local-Claude hook events.
 - Existing local-Claude records cover the `cnt_roll_3` implementation/test, controlled fault/repair experiments and the genuine SDK self-audit output.
 - For Exercise 4, local Claude Code generated and applied the two target-transform/inverse functions through an actual Edit call; its post-edit leakage hook passed. I reviewed the result and added the missing nonnegative-domain and vector-shape checks.
 

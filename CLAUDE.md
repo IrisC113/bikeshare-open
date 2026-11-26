@@ -9,6 +9,7 @@ rides) from calendar, weather, and lagged-demand features.
 - `make train` - fit models, write `reports/metrics.json`
 - `make test` - pytest; run this before claiming anything works
 - `make all` - the three pipeline stages in order
+- `/seed-fault <name>` - record and restore a known fault in an isolated copy
 
 ## Non-negotiable rules
 - **Never** put `casual` or `registered` in a feature set:

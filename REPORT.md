@@ -1,6 +1,6 @@
 # Results
 
-Working draft through Exercise 4; the Exercise 5 argument and teammate audit remain for later. All R² and MAE values below use the original daily-ride count scale. These first eight rows describe the **untransformed** pipeline before and after adding `cnt_roll_3`; the after rows match `reports/metrics.json`.
+Working draft through Exercise 5; teammate audit and final review remain for later. All R² and MAE values below use the original daily-ride count scale. These first eight rows describe the **untransformed** pipeline before and after adding `cnt_roll_3`; the after rows match `reports/metrics.json`.
 
 | Feature set | Model | Validation R² | Validation MAE | Test R² | Test MAE |
 | --- | --- | ---: | ---: | ---: | ---: |
@@ -88,7 +88,7 @@ The test command rejects code/data drift, a different locked comparison, the can
 
 # Exercise 5: ridge vs persistence
 
-Pending the separate Exercise 5 deployment argument for the original Ridge/persistence comparison. The Exercise 4 result does not by itself settle that question.
+For a daily operating decision with costs approximately proportional to absolute forecast error, I would retain “yesterday again” rather than replace it with the current untransformed Ridge. Across the same 184 test days, Ridge increases R² from 0.5099 to 0.5800 (+0.0701, corresponding to approximately 14.3% lower MSE), but raises MAE from 840.1 to 946.2 rides/day—106.1 more rides/day of absolute error, or 12.6% worse. Both models comfortably beat the training-mean baseline (R² −2.1441, MAE 2847.7), so beating that weak baseline is not reason enough to deploy Ridge. The R² advantage could matter if large misses incur disproportionately high costs; under that different objective, an explicit cost-weighted evaluation would be needed. Ridge also requires calendar/weather features, lag construction, scaling and fitted coefficients, whereas persistence needs only the latest count. With no gain under the chosen absolute-error objective, I would keep the simpler baseline. This judgment uses the canonical Ridge comparison; Exercise 4's normalized HGB is a separate experimental model.
 
 # Attribution
 
@@ -99,10 +99,12 @@ Agent-generated or integrated work:
 - Existing local-Claude records cover the `cnt_roll_3` implementation/test, controlled fault/repair experiments and the genuine SDK self-audit output.
 - For Exercise 4, local Claude Code generated and applied the two target-transform/inverse functions through an actual Edit call; its post-edit leakage hook passed. I reviewed the result and added the missing nonnegative-domain and vector-shape checks.
 
+
 Decisions and author review:
 
 - The dataset, target, forbidden columns and split were prescribed by the starter. They are maintained here, not presented as newly invented research choices.
 - The existing Exercise 1 record documents I review/correction of the independent named-date feature test and the decision to retain an unhelpful feature for the assignment demonstration.
 - I proposed the Exercise 4 transformations, finite candidate plan, validation selection rule and interpretation under the instruction to complete this exercise. These decisions are recorded in `docs/DECISIONS.md`.
+- For Exercise 5, I drafted the conditional deployment argument and calculated the metric differences from existing canonical scores. 
 
-The saved self-audit predates Exercise 4's optional flags. Its original-pipeline conclusions are consistent with the preserved default code and metrics; a final audit refresh should use the finished repository after the remaining work. 
+The saved self-audit predates Exercise 4's optional flags. Its original-pipeline conclusions are consistent with the preserved default code and metrics; a final audit refresh should use the finished repository after the remaining work.
